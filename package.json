@@ -1,0 +1,29 @@
+{
+  "name": "jeli.http.mock",
+  "version": "1.0.0",
+  "description": "Http Mock Client Server for frontend development simple and fast",
+  "main": "dist/jeli.mock.js",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/gojecks/jeli.http.mock.git"
+  },
+  "keywords": [
+    "httpclient",
+    "javascript",
+    "mock",
+    "server",
+    "client",
+    "server",
+    "xhr",
+    "mock"
+  ],
+  "author": "Gojecks Joseph",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gojecks/jeli.http.mock/issues"
+  },
+  "homepage": "https://github.com/gojecks/jeli.http.mock#readme"
+}

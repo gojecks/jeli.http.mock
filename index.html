@@ -1,0 +1,45 @@
+<html>
+
+<head>
+    <title>JHTTP MOCK TEST</title>
+    <script src="dist/jeli.http.min.js"></script>
+
+</head>
+
+<body>
+    <h2>JHTTP TEST BED</h2>
+    <pre id="mockContainer"></pre>
+
+    <script>
+        var server = new jHttp({});
+        var app = new server.app();
+        var container = document.getElementById('mockContainer');
+
+        server.interceptor.set({
+            type: 'request',
+            handler: function(options) {
+                container.innerHTML = "<h2>Loading....</h2>"
+                return options;
+            }
+        })
+
+        app.get('/user/:userID', function(instance) {
+            setTimeout(function() {
+                instance.res.status(200).responseText('I am working').exit();
+            }, 4500)
+        });
+
+        server.request('/user/1?text=2', {
+                method: 'GET',
+                timeout: 5000,
+                headers: {
+                    Authorization: 'Bearer jjfkkfhfkfkkfhf'
+                }
+            })
+            .then(function(response) {
+                container.innerHTML = JSON.stringify(response);
+            });
+    </script>
+</body>
+
+</html>
