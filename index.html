@@ -39,6 +39,28 @@
             .then(function(response) {
                 container.innerHTML = JSON.stringify(response);
             });
+
+
+        /**
+         * test socket creation
+         * only for test and development
+         */
+        var server = localServer();
+        var socket = new server.socket(server);
+        socket.connect({
+            domain: 'localhost',
+            port: 3000,
+            isServerInstance: true
+        }, socketHandler);
+
+        function socketHandler(socket) {
+            server.onDestroy(function(e) {
+                socket.emit('server.destroyed', {});
+            });
+
+            socket
+                .emit('server.reconnected', {})
+        }
     </script>
 </body>
 

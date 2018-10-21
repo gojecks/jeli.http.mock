@@ -4,7 +4,7 @@
  *     logger: {
  *          
  *     },
- *     interceptor : {}
+ *     lss: false
  * }
  */
 function jHttp(definition) {
@@ -15,7 +15,7 @@ function jHttp(definition) {
         logging: 2,
         logger: window.console,
         log: null,
-        interceptor: null
+        lss: false
     }, (definition || {}));
 
     var apiFactory = new JHTTPAPI();
@@ -42,8 +42,9 @@ function jHttp(definition) {
         } else {
             options = options || {};
             options.url = url;
-            options.type = options.method = options.method || options.type;
         }
+        // set the request method
+        options.method = options.type = options.method || options.type || 'GET';
 
         /**
          * extend options with default options
@@ -105,12 +106,20 @@ function jHttp(definition) {
                     request.send();
                 });
             } else {
-                logger.log(null, ['No mock matched to request', options.url]);
-                reject(null, request);
+                logger.log(null, ['Request not found', options.url]);
+                reject(new REQUEST_NOT_FOUND(options));
             }
         });
 
         return promise;
+    }
+
+    function REQUEST_NOT_FOUND(options) {
+        this.url = options.url;
+        this.status = 404;
+        this.statusText = 'Not Found';
+        this.method = options.type;
+        this.timestamp = +new Date;
     }
 
     /**
@@ -139,33 +148,29 @@ function jHttp(definition) {
              */
             this.req = {
                 getParam: function() {
-                    var params = {};
-                    if (request.method.toLowerCase() === 'get') {
-                        if (_api._.paramsMapping.length) {
-                            _api._.regexp.exec(request.url.split("?")[0]).splice(1)
-                                .forEach(function(val, prop) {
-                                    var isNumber = parseInt(val);
-                                    params[_api._.paramsMapping[prop]] = !isNaN(isNumber) ? isNumber : val;
-                                });
-                        }
-                        /**
-                         * get query from URL
-                         */
-                        var queryParam = request.url.split("?")[1];
-                        if (queryParam) {
-                            queryParam = queryParam.split(/[&]/);
-                            queryParam.forEach(function(query) {
-                                if (query) {
-                                    query = query.split("=");
-                                    var isNumber = parseInt(query[1]);
-                                    params[query[0]] = !isNaN(isNumber) ? isNumber : query[1];
-                                }
+                    var params = (request.body || request.data || {});
+                    if (_api._.paramsMapping.length) {
+                        _api._.regexp.exec(request.url.split("?")[0]).splice(1)
+                            .forEach(function(val, prop) {
+                                var isNumber = parseInt(val);
+                                params[_api._.paramsMapping[prop]] = !isNaN(isNumber) ? isNumber : val;
                             });
-                        }
-
-                    } else {
-                        params = (reqeuest.body || {});
                     }
+                    /**
+                     * get query from URL
+                     */
+                    var queryParam = request.url.split("?")[1];
+                    if (queryParam) {
+                        queryParam = queryParam.split(/[&]/);
+                        queryParam.forEach(function(query) {
+                            if (query) {
+                                query = query.split("=");
+                                var isNumber = parseInt(query[1]);
+                                params[query[0]] = !isNaN(isNumber) ? isNumber : query[1];
+                            }
+                        });
+                    }
+
 
                     return params;
                 },
@@ -274,6 +279,7 @@ function jHttp(definition) {
     };
 
     this.interceptor = _interceptor;
+    this.socket = JHttpSocket;
 }
 /**
  * register to window
