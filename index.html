@@ -31,7 +31,7 @@
 
         server.request('/user/1?text=2', {
                 method: 'GET',
-                timeout: 5000,
+                timeout: 1000,
                 headers: {
                     Authorization: 'Bearer jjfkkfhfkfkkfhf'
                 }
@@ -45,8 +45,8 @@
          * test socket creation
          * only for test and development
          */
-        var server = localServer();
-        var socket = new server.socket(server);
+        var ls = localServer();
+        var socket = new server.socket(ls);
         socket.connect({
             domain: 'localhost',
             port: 3000,
@@ -54,7 +54,7 @@
         }, socketHandler);
 
         function socketHandler(socket) {
-            server.onDestroy(function(e) {
+            ls.onDestroy(function(e) {
                 socket.emit('server.destroyed', {});
             });
 
